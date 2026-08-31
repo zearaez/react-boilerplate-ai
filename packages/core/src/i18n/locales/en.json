@@ -1,0 +1,109 @@
+{
+  "common": {
+    "appName": "Repo Starter",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loadMore": "Load more",
+    "notFound": "Not found",
+    "somethingWentWrong": "Something went wrong",
+    "offline": "Could not reach the server. Check your connection.",
+    "search": "Search",
+    "searchPlaceholder": "Search posts…",
+    "clear": "Clear",
+    "saved": "Saved",
+    "noResults": "Nothing matched “{{query}}”. Try a different search.",
+    "roles": {
+      "admin": "Administrator",
+      "member": "Member"
+    }
+  },
+  "nav": {
+    "primary": "Main",
+    "openMenu": "Open navigation menu",
+    "menu": "Navigation",
+    "signedInAs": "Signed in as",
+    "sections": {
+      "workspace": "Workspace"
+    }
+  },
+  "bugReporter": {
+    "button": "Report a bug"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signingIn": "Signing in…",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com",
+    "welcomeTitle": "Sign in",
+    "welcomeSubtitle": "Use your organization account.",
+    "consoleTitle": "Operations console",
+    "consoleSubtitle": "One shared core, two apps — web and mobile, always in step.",
+    "demoHint": "Demo credentials: anisha@example.com / password123",
+    "invalidCredentials": "That email and password combination is not recognised.",
+    "forgotPassword": "Forgot your password?",
+    "forgotPasswordTitle": "Reset your password",
+    "forgotPasswordSubtitle": "Enter your email and we will send you a reset code.",
+    "sendResetCode": "Send reset code",
+    "sendingResetCode": "Sending…",
+    "resetSentTitle": "Check your email",
+    "resetSent": "If an account exists for {{email}}, a reset code is on its way. The code expires in 30 minutes.",
+    "enterResetCode": "I have a code",
+    "backToSignIn": "Back to sign in",
+    "resetPasswordTitle": "Choose a new password",
+    "resetPasswordSubtitle": "Paste the code from your email, then pick a new password.",
+    "resetCode": "Reset code",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "updatePassword": "Update password",
+    "updatingPassword": "Updating…",
+    "resetDoneTitle": "Password updated",
+    "resetDone": "Your password was changed and every other session was signed out. Sign in with the new one.",
+    "resetDemoHint": "Demo reset code: reset-code-user-1"
+  },
+  "posts": {
+    "listTitle": "Posts",
+    "countLabel_one": "{{count}} post",
+    "countLabel_other": "{{count}} posts",
+    "empty": "No posts yet. Create the first one.",
+    "new": "New post",
+    "create": "Create post",
+    "editTitle": "Edit post",
+    "deleteConfirm": "Delete this post? This cannot be undone.",
+    "notFound": "That post does not exist, or it was deleted.",
+    "byAuthor": "by {{name}}",
+    "draft": "Draft",
+    "published": "Published",
+    "fields": {
+      "title": "Title",
+      "titlePlaceholder": "A short, clear title",
+      "body": "Body",
+      "bodyPlaceholder": "What do you want to say?",
+      "published": "Publish immediately"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "How we reach you.",
+    "displayName": "Display name",
+    "email": "Email",
+    "emailHint": "Contact support to change your email.",
+    "phone": "Phone number",
+    "phoneHint": "Required for SMS notifications.",
+    "notificationChannel": "Notify me by",
+    "channel": {
+      "email": "Email",
+      "sms": "SMS",
+      "none": "Do not notify me"
+    },
+    "marketingOptIn": "Send me product updates",
+    "save": "Save changes",
+    "savedJustNow": "Saved"
+  }
+}

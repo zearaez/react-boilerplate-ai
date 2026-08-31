@@ -1,0 +1,17 @@
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "comment": "Cursor rule files are markdown with YAML frontmatter, but Prettier cannot infer a parser from .mdc, so without this they are silently skipped by `pnpm format:check` — the one set of agent docs the gate could not see.",
+      "files": "*.mdc",
+      "options": { "parser": "markdown" }
+    }
+  ]
+}

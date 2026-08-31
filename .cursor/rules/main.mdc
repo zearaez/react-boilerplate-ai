@@ -1,0 +1,96 @@
+---
+description: Project-wide rules for this pnpm monorepo
+globs: ['**/*']
+alwaysApply: true
+---
+
+# react-monorepo-ai — Cursor rules
+
+## Critical: your training data is wrong about these versions
+
+| Library        | Pinned version  | Docs URL                                                     | What you'll get wrong                        |
+| -------------- | --------------- | ------------------------------------------------------------ | -------------------------------------------- |
+| Expo SDK       | 57              | https://docs.expo.dev/versions/v57.0.0/                      | Module versions are `~57.x`, not `~18.x`     |
+| expo-router    | ~57.0.9         | https://docs.expo.dev/router/advanced/protected/             | Auth is `<Stack.Protected>`, not `replace()` |
+| NativeWind     | 4.2.6           | https://www.nativewind.dev/docs/getting-started/installation | v4 needs a Babel preset + `tailwind.config`  |
+| Tailwind CSS   | **3.4.19**      | https://v3.tailwindcss.com/docs                              | tailwindcss.com serves **v4** — wrong here   |
+| React Router   | 8.3.0           | https://reactrouter.com/                                     | `react-router-dom` is frozen at 7            |
+| Vite           | 8.2.0           | https://vite.dev/guide/                                      | Rolldown: `rolldownOptions`, `oxc`           |
+| Vitest         | 4.1.10          | https://vitest.dev/guide/migration                           | `projects` not `workspace`                   |
+| ESLint         | 10.8.0          | https://eslint.org/docs/latest/use/configure/                | Flat config only — eslintrc is REMOVED       |
+| TypeScript     | **6.0.3 exact** | https://www.typescriptlang.org/docs/                         | TS 7 has no compiler API; tseslint caps <6.1 |
+| TanStack Query | 5.101.4         | https://tanstack.com/query/latest                            | Object syntax; `cacheTime` is now `gcTime`   |
+| zod            | 4.4.3           | https://zod.dev/                                             | `z.email()`, not `z.string().email()`        |
+| RNTL           | 14.0.1          | https://callstack.github.io/react-native-testing-library/    | `render`/`fireEvent` are **async**           |
+| Jest (mobile)  | **29.7.0**      | https://jestjs.io/docs/29.x                                  | jest-expo@57 needs Jest 29, not 30           |
+| Babel          | **7.29.7**      | https://babeljs.io/docs/                                     | Babel 8 breaks babel-jest                    |
+
+`pnpm-workspace.yaml` is the only place versions live. If a URL 404s, say so and
+stop — do not substitute a remembered API.
+
+## Repo structure
+
+```
+packages/core/src/features/<name>/  ← API + schemas + hooks + keys
+packages/tokens/src/tokens.ts        ← ALL colours and radius values
+packages/mocks/src/                  ← fake backend (MSW)
+apps/web/src/                        ← web UI only
+apps/mobile/app/                     ← mobile routes
+apps/mobile/components/              ← mobile non-route components
+packages/config/                     ← lint + tsconfig
+```
+
+`@repo/core` is **platform-agnostic** — never import `react-native`, `expo-*`,
+`react-dom`, `@repo/tokens`, or touch `window`/`document` from it.
+
+## Hard rules
+
+- No `any` — use `unknown` + zod parse, or write the type
+- No `console.*` — use `logger` from `@repo/core`
+- No raw colours (`#fff`, `rgb()`) — define a token in `@repo/tokens` first
+- No `localStorage`/`sessionStorage` — tokens are memory-only on web
+- No `StyleSheet.create` in mobile — use NativeWind `className`
+- Every user-facing string through `t()`
+- Every API response `zod.parse`d before leaving the api layer
+- Field-specific validation uses `superRefine` with a `path`, never `.refine()` —
+  `.refine()` puts the error at the form root, where the user cannot locate it
+- No `eslint-disable`, no type widening to `any`, no coverage threshold reduction
+
+## Scaffold a feature
+
+```bash
+pnpm gen feature --args <singular> <plural> /api/<plural>
+pnpm fix
+```
+
+## Key commands
+
+```bash
+pnpm quality:check    # full CI gate — run before done
+pnpm fix              # eslint --fix + prettier --write
+pnpm tokens:sync      # after editing tokens.ts
+pnpm dev:web          # web dev server (MSW, no backend needed)
+pnpm mock             # mock API server (mobile needs this)
+pnpm test             # core + web tests
+pnpm test:mobile      # jest-expo
+```
+
+## Never
+
+- `npm install` / `yarn` — use `pnpm add --filter <pkg> <dep>`
+- Hardcode a version in a `package.json` — add it to the catalog and write `catalog:`
+- Import `@react-navigation/*` (expo-router forked in SDK 56)
+- Import `react-router-dom` (does not exist at v8)
+- Write Tailwind v4 syntax (`@theme`, CSS-first config)
+- Upgrade `typescript` past 6.0.3, `tailwindcss` past 3, `nativewind` past 4,
+  `jest` past 29, or `@babel/core` past 7 — each breaks something silently
+- Edit `apps/web/src/global.css` or `apps/mobile/global.css` — they are GENERATED.
+  Edit `packages/tokens/src/tokens.ts` (or the app's `styles/extra.css`), then run
+  `pnpm tokens:sync`
+- Add `watchFolders` / `resolver.nodeModulesPaths` to `metro.config.js` — Expo
+  auto-detects monorepos and overriding it breaks pnpm resolution
+- Move `react-native-worklets/plugin` out of last position in `babel.config.js`
+- Add a route `action` in the web router, or let a route `loader` throw — it runs
+  even when the parent guard would redirect
+- Put UI state in `@repo/core` or server data in a Zustand store
+- Commit to `main`/`prod`/`uat`/`develop` or use `--no-verify`

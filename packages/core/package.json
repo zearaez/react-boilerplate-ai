@@ -1,0 +1,46 @@
+{
+  "name": "@repo/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "All shared logic: api client, zod schemas, TanStack Query hooks, Zustand session store, i18n",
+  "//": "Consumed as raw TypeScript source by both Metro and Vite. React and @tanstack/react-query are PEER deps so the app owns the single instance — see scripts/assert-single-version.mjs.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./i18n": "./src/i18n/index.ts",
+    "./test": "./src/test/render-hook.tsx"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@outcode/bug-reporter-core": "catalog:",
+    "axios": "catalog:",
+    "i18next": "catalog:",
+    "react-i18next": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.101.0",
+    "react": ">=19.2.0"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@repo/mocks": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "jsdom": "catalog:",
+    "msw": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

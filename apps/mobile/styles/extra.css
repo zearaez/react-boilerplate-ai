@@ -1,0 +1,18 @@
+/*
+ * App-specific CSS for the mobile app.
+ *
+ * THIS is the file to edit — global.css is generated from
+ * packages/tokens/src/tokens.ts plus this file, by `pnpm tokens:sync`.
+ * Colour values belong in tokens.ts, not here.
+ *
+ * Keep this file small. NativeWind compiles it through Tailwind, but React
+ * Native supports only a subset of CSS — no pseudo-elements, no descendant
+ * selectors, no `outline`. Styling belongs in `className` on the component.
+ */
+@layer base {
+  :root {
+    /* NativeWind reads this to size rem units. 16 matches the RNR default and
+       the shadcn scale on web, so `text-sm` is the same size on both. */
+    --rem-base: 16;
+  }
+}

@@ -1,0 +1,42 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [bug]
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where
+      options: [web, mobile (iOS), mobile (Android), shared logic (@repo/core), tooling/CI]
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations: { required: true }
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens instead
+      description: Include the exact error text, not a screenshot of it.
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+    validations: { required: true }
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I checked docs/known-issues.md
+          required: true
+        - label: I ran `pnpm doctor` (duplicate deps, expo-doctor, expo install --check)

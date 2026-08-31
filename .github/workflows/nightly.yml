@@ -1,0 +1,70 @@
+name: Nightly
+
+# What does NOT belong in the PR gate, but does belong somewhere.
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-build:
+    name: Android prebuild + assembleDebug
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with: { distribution: temurin, java-version: '17' }
+
+      - name: Prebuild
+        # Native compilation catches config-plugin and native-module problems that
+        # `expo export` cannot. Those change rarely, so nightly is the right
+        # cadence — 12-20 minutes is too slow for a PR.
+        run: pnpm --filter @repo/mobile exec expo prebuild --platform android --clean
+        env: { APP_ENV: development }
+
+      - name: assembleDebug
+        run: ./gradlew assembleDebug --no-daemon
+        working-directory: apps/mobile/android
+
+  docs-links:
+    name: Check the pinned doc URLs in AGENTS.md
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: lychee
+        # Small but load-bearing: AGENTS.md tells agents to read those exact URLs
+        # instead of trusting their training data. A 404 in that table teaches
+        # them the table is unreliable, and nothing else would surface it.
+        uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2.4.1
+        with:
+          args: --no-progress --max-concurrency 4 --accept 200,206,429 AGENTS.md README.md docs/
+          fail: true
+
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup
+
+      - name: Build and serve
+        run: |
+          pnpm --filter @repo/web build
+          pnpm --filter @repo/web exec vite preview --port 4173 &
+          npx --yes wait-on http://localhost:4173 --timeout 60000
+        env:
+          VITE_ENABLE_MOCKS: 'true'
+
+      - name: Audit
+        # Kept OUT of the PR gate on purpose: Lighthouse against a preview URL is
+        # slow and flaky, and a flaky required check trains people to hit re-run
+        # without reading, which erodes every other gate.
+        run: npx --yes lighthouse http://localhost:4173 --output=json --output-path=./lh.json --chrome-flags="--headless=new" --quiet
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with: { name: lighthouse, path: lh.json, retention-days: 7 }

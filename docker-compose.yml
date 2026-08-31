@@ -1,0 +1,41 @@
+# Local one-command stack (audit item 3.8): the mock API plus the web app built
+# and served the way production serves it.
+#
+# For day-to-day development use `pnpm dev` instead — it is faster and has HMR.
+# This exists to reproduce the production container locally and to give the
+# nginx/CSP configuration somewhere to be exercised before a deploy.
+#
+#   docker compose up --build
+#   web  -> http://localhost:8080
+#   mock -> http://localhost:4000/health
+
+services:
+  mock-api:
+    image: node:22.22.0-alpine
+    working_dir: /repo
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile --filter @repo/mocks... && pnpm --filter @repo/mocks server"
+    volumes:
+      - .:/repo
+    ports:
+      - '4000:4000'
+    environment:
+      MOCK_PORT: '4000'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/health']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # The browser talks to the host-published port, not the compose network.
+        VITE_API_URL: http://localhost:4000
+        VITE_APP_ENV: development
+    ports:
+      - '8080:8080'
+    depends_on:
+      mock-api:
+        condition: service_healthy

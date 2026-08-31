@@ -1,0 +1,28 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
+  "globalDependencies": ["tsconfig.json", "pnpm-workspace.yaml"],
+  "globalEnv": ["NODE_ENV", "CI"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".expo/**", "!.expo/cache/**"],
+      "env": ["VITE_*", "EXPO_PUBLIC_*", "APP_ENV", "SENTRY_*"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["VITE_*", "EXPO_PUBLIC_*", "APP_ENV"]
+    },
+    "server": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": []
+    }
+  }
+}

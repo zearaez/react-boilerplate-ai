@@ -1,0 +1,5 @@
+{
+  "status": "ok",
+  "service": "repo-starter-web",
+  "note": "Static health endpoint (audit item 20.4). Served at /health via the vercel.json rewrite exclusion. A 200 here proves the CDN is serving the deployed build; it says nothing about the API — see docs/runbook.md."
+}

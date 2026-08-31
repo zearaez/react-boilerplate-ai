@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 18.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "base": {
+      "node": "22.22.0",
+      "//corepack": "EAS + pnpm is a known rough edge (eas-cli#3148, #2978, #2541): the worker reads `packageManager` and provisions pnpm via Corepack, and a version skew fails the install. If a build fails at the install step, set corepack:false and add \"pnpm\": \"11.18.0\" here instead. See docs/known-issues.md.",
+      "corepack": true,
+      "env": {
+        "NPM_CONFIG_NODE_LINKER": "hoisted"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": { "APP_ENV": "development" }
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "channel": "uat",
+      "env": { "APP_ENV": "uat" }
+    },
+    "production": {
+      "extends": "base",
+      "autoIncrement": true,
+      "channel": "prod",
+      "env": { "APP_ENV": "production" }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

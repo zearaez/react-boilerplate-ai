@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Expo + React Native (mobile app)",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "types": ["node", "jest"],
+    // Metro resolves .native/.ios/.android extensions; tsc does not, so
+    // relative imports inside the app must stay extension-less and unambiguous.
+    "customConditions": ["react-native"]
+  }
+}

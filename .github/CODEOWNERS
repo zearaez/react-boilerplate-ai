@@ -1,0 +1,24 @@
+# Audit item 7.2. Replace @OutCode-Software/frontend with the real team when this
+# template is cloned — GitHub silently ignores owners it cannot resolve, so a
+# wrong handle here is worse than none.
+
+*                               @OutCode-Software/frontend
+
+# Shared logic: a change here affects both apps at once, so it gets the widest
+# review.
+/packages/core/                 @OutCode-Software/frontend
+/packages/tokens/               @OutCode-Software/frontend
+
+# Anything that can silently weaken a gate.
+/packages/config/               @OutCode-Software/frontend-leads
+/.github/                       @OutCode-Software/frontend-leads
+/pnpm-workspace.yaml            @OutCode-Software/frontend-leads
+/vitest.config.ts               @OutCode-Software/frontend-leads
+/turbo.json                     @OutCode-Software/frontend-leads
+/.husky/                        @OutCode-Software/frontend-leads
+/scripts/                       @OutCode-Software/frontend-leads
+
+# The rules agents follow. Changing them changes every future PR.
+/AGENTS.md                      @OutCode-Software/frontend-leads
+/CLAUDE.md                      @OutCode-Software/frontend-leads
+/.claude/                       @OutCode-Software/frontend-leads

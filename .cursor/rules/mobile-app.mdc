@@ -1,0 +1,37 @@
+---
+description: Rules for mobile app files (screens, components)
+globs: ['apps/mobile/**/*.tsx', 'apps/mobile/**/*.ts']
+alwaysApply: false
+---
+
+# Mobile app
+
+## Non-negotiable
+
+- Route files in `apps/mobile/app/` must have a **default export**
+- Non-route components go in `apps/mobile/components/`
+- Styling is NativeWind `className` only — no `StyleSheet.create`
+- **Never** import `@react-navigation/*` — expo-router forked away in SDK 56
+
+## expo-router auth (SDK 57)
+
+```tsx
+// Auth guard — Stack.Protected, NOT router.replace() in a useEffect
+<Stack.Protected guard={isAuthenticated}>
+  <Stack.Screen name="(app)" />
+</Stack.Protected>
+```
+
+## Testing (RNTL 14 + Jest 29)
+
+```ts
+// render is async — always await
+const { getByRole } = await render(<MyComponent />);
+const { result } = await renderHook(() => useMyHook(), { wrapper });
+```
+
+## Five states on every list screen
+
+Loading skeleton → error (with retry) → empty → items → `FlatList onEndReached`
+
+Copy from `apps/mobile/app/(app)/posts/`.

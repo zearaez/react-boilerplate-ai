@@ -1,0 +1,6 @@
+sh scripts/branch-guard.sh
+
+# The same gate CI runs, so a red pipeline is a surprise rather than the norm.
+# Genuinely need to skip it? `git push --no-verify` — but then you own the CI
+# failure, and AGENTS.md tells agents never to use it.
+pnpm quality:check

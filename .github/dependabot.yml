@@ -1,0 +1,60 @@
+# Audit item 5.3. One of the five gaps every audit of our repos has flagged.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    commit-message:
+      prefix: 'chore(deps)'
+    labels: ['dependencies']
+    groups:
+      # One PR per concern instead of fifteen. Each group's members move together
+      # anyway, and a grouped PR is reviewable.
+      eslint:
+        patterns: ['eslint', 'eslint-*', '@eslint/*', 'typescript-eslint', '@typescript-eslint/*']
+      testing:
+        patterns: ['vitest', '@vitest/*', '@testing-library/*', 'jsdom', 'msw', '@mswjs/*']
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+      tanstack:
+        patterns: ['@tanstack/*']
+      radix:
+        patterns: ['@radix-ui/*']
+    ignore:
+      # These are pinned deliberately. Read docs/versions.md before touching any
+      # of them — an automated bump here breaks the repo in a non-obvious way.
+      #
+      # typescript: 7.x has no compiler API; typescript-eslint peer-caps at <6.1.
+      - dependency-name: typescript
+        versions: ['>=6.1.0']
+      # tailwindcss: NativeWind 4 requires v3. Its peer range wrongly allows v4.
+      - dependency-name: tailwindcss
+        versions: ['>=4.0.0']
+      # Expo owns these. Bump them with `expo install --check`, never Dependabot.
+      - dependency-name: expo
+      - dependency-name: expo-*
+      - dependency-name: react-native
+      - dependency-name: react-native-*
+      - dependency-name: jest-expo
+      - dependency-name: '@sentry/react-native'
+      # react must stay on the version Expo SDK 57 pins exactly.
+      - dependency-name: react
+        versions: ['>=19.3.0']
+      - dependency-name: react-dom
+        versions: ['>=19.3.0']
+      # NativeWind 5 needs Tailwind 4; the two must move together, by hand.
+      - dependency-name: nativewind
+        versions: ['>=5.0.0']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'chore(ci)'
+    labels: ['dependencies', 'ci']

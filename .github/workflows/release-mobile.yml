@@ -1,0 +1,49 @@
+name: Release mobile
+
+# Deliberately NOT in the PR gate. An EAS build is 10-30 minutes, consumes plan
+# credits, and the pnpm/Corepack interaction is a known rough edge
+# (eas-cli#3148, #2978, #2541) — an intermittently failing REQUIRED check
+# destroys trust in every other gate. See docs/delivery.md.
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS build profile
+        type: choice
+        options: [development, preview, production]
+        default: preview
+      platform:
+        description: Platform
+        type: choice
+        options: [ios, android, all]
+        default: all
+  push:
+    branches: [prod]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: EAS build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'push' && 'production' || 'uat' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup
+
+      - name: Sanity-check the Expo project before spending build minutes
+        run: |
+          pnpm --filter @repo/mobile run doctor
+          pnpm --filter @repo/mobile exec expo install --check
+
+      - name: Build
+        # --no-wait returns immediately instead of burning Actions minutes polling.
+        run: |
+          pnpm dlx eas-cli@latest build \
+            --non-interactive --no-wait \
+            --platform "${{ inputs.platform || 'all' }}" \
+            --profile "${{ inputs.profile || 'production' }}"
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

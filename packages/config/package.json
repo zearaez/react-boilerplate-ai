@@ -1,0 +1,33 @@
+{
+  "name": "@repo/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ESLint, TypeScript and Prettier configuration shared by every package",
+  "exports": {
+    "./eslint/base": "./eslint/base.js",
+    "./eslint/logic-only": "./eslint/logic-only.js",
+    "./eslint/react-web": "./eslint/react-web.js",
+    "./eslint/react-native": "./eslint/react-native.js",
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/vite.json": "./tsconfig/vite.json",
+    "./tsconfig/expo.json": "./tsconfig/expo.json",
+    "./tsconfig/node.json": "./tsconfig/node.json",
+    "./prettier": "./prettier/index.js"
+  },
+  "dependencies": {
+    "@eslint/js": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-import-resolver-typescript": "catalog:",
+    "eslint-plugin-import-x": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-react-refresh": "catalog:",
+    "globals": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "devDependencies": {
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

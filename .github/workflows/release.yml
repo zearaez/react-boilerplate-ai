@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    branches: [prod]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    name: Tag and changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Read the version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Create the tag if it does not exist
+        run: |
+          tag="v${{ steps.version.outputs.value }}"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "$tag already exists — bump the version in package.json first."
+            exit 1
+          fi
+          git tag -a "$tag" -m "Release $tag"
+          git push origin "$tag"
+
+      - name: Create the GitHub release
+        # Notes are generated from Conventional Commits, which is why commitlint
+        # is a hard gate rather than a style preference.
+        run: gh release create "v${{ steps.version.outputs.value }}" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

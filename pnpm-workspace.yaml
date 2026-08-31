@@ -1,0 +1,249 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# ---------------------------------------------------------------------------
+# nodeLinker: hoisted is REQUIRED, not a preference.
+#
+# NativeWind 4 has two unfixed upstream bugs under pnpm's isolated layout:
+#   - nativewind/nativewind#1771 (open PR): resolves `tailwindcss` from its own
+#     nested node_modules instead of the project's, producing bogus
+#     "unsupported Tailwind version" errors and ERR_PACKAGE_PATH_NOT_EXPORTED
+#     from require('tailwindcss/loadConfig').
+#   - nativewind/nativewind#1833 (open): react-native-css-interop/babel requires
+#     @babel/plugin-transform-react-jsx by name without declaring it, and only
+#     works because babel-preset-expo hoists it.
+# Hoisting makes both disappear because there is exactly one copy on disk.
+#
+# The cost is phantom dependencies. That cost is paid back by
+# import-x/no-extraneous-dependencies and the no-restricted-imports package
+# boundaries in packages/config/eslint — see docs/known-issues.md.
+# ---------------------------------------------------------------------------
+nodeLinker: hoisted
+
+# ---------------------------------------------------------------------------
+# SINGLETON PINS. These live here and NOT in package.json's `pnpm.overrides`:
+# pnpm 11 stopped reading that field and ignores it with only a warning, which
+# means a stale setup silently ships two copies of React.
+#
+# Why each one is forced:
+#   react / react-dom        Two copies produce "Invalid hook call" with a stack
+#                            trace pointing into @tanstack/react-query.
+#                            @repo/core exports hooks, so React genuinely
+#                            crosses the package boundary. 19.2.3 (not npm's
+#                            19.2.8) because Expo SDK 57 pins it exactly and
+#                            deviating fails expo-doctor. Web pays nothing for a
+#                            patch delta; mobile would pay a lot.
+#   @tanstack/react-query    Two copies produce "No QueryClient set".
+#   tailwindcss              Stops a transitive dep dragging in v4 and silently
+#                            breaking NativeWind.
+#   typescript               See the catalog comment.
+#   @react-native/jest-preset  jest-expo@57 peers ^0.85 against RN 0.86
+#                            (expo/expo#47435).
+#
+# Enforced by scripts/assert-single-version.mjs in CI.
+# ---------------------------------------------------------------------------
+overrides:
+  react: 19.2.3
+  react-dom: 19.2.3
+  '@types/react': 19.2.7
+  '@tanstack/react-query': 5.101.4
+  tailwindcss: 3.4.19
+  typescript: 6.0.3
+  '@react-native/jest-preset': ^0.86.2
+  # Security, not compatibility: transitive copies of postcss below 8.5.18 carry
+  # two HIGH advisories. Verified with `pnpm audit`.
+  postcss: '>=8.5.25'
+
+# pnpm 11 blocks postinstall scripts unless listed here. An unapproved native
+# binary fails at RUNTIME, not at install, so this list is load-bearing:
+#   esbuild        platform binary; without it Vite/Vitest cannot transform
+#   unrs-resolver  native resolver behind eslint-import-resolver-typescript;
+#                  without it import-x/no-cycle silently resolves nothing
+#   msw            writes public/mockServiceWorker.js
+# Regenerate with `pnpm approve-builds` and COMMIT the result.
+allowBuilds:
+  # Downloads the sentry-cli binary used to upload sourcemaps during deploy.
+  '@sentry/cli': true
+  esbuild: true
+  msw: true
+  unrs-resolver: true
+
+# ---------------------------------------------------------------------------
+# THE VERSION MATRIX. Package manifests say `catalog:`, never a number, so a
+# version can only be changed in one place. Read docs/versions.md before
+# touching any exact pin — several of them are exact for non-obvious reasons.
+# ---------------------------------------------------------------------------
+catalog:
+  # --- toolchain ---
+  # EXACT. TypeScript 7 ships no compiler API (its "." export is a version
+  # stub), so typescript-eslint cannot consume it; tseslint peer-caps at
+  # <6.1.0 even on canary. A caret here would silently drift to 6.1 and break
+  # every type-aware lint rule. Do not change without reading docs/versions.md.
+  typescript: 6.0.3
+  turbo: 2.10.8
+  '@turbo/gen': 2.10.8
+  prettier: 3.9.6
+  tsx: 4.20.6
+
+  # --- lint ---
+  eslint: 10.8.0
+  '@eslint/js': 10.0.1
+  typescript-eslint: 8.65.0
+  eslint-config-prettier: 10.1.8
+  eslint-import-resolver-typescript: 4.4.5
+  eslint-plugin-import-x: 4.17.1
+  eslint-plugin-jsx-a11y: 6.10.2
+  eslint-plugin-react-hooks: 7.1.1
+  eslint-plugin-react-refresh: 0.5.3
+  globals: 17.9.0
+
+  # --- react (EXACT: matches Expo SDK 57 bundledNativeModules) ---
+  react: 19.2.3
+  react-dom: 19.2.3
+  '@types/react': 19.2.7
+  '@types/react-dom': 19.2.3
+
+  # --- shared logic ---
+  '@tanstack/react-query': 5.101.4
+  '@tanstack/react-query-devtools': 5.101.4
+  axios: 1.19.0
+  zod: 4.4.3
+  zustand: 5.0.14
+  i18next: 26.3.6
+  react-i18next: 17.0.11
+
+  # --- bug reporter ---
+  # In-app bug reporter (floating button -> screenshot -> annotate -> file a
+  # ticket). `-core` is platform-agnostic (no deps, no peers, needs only fetch),
+  # which is the only reason @repo/core is allowed to depend on it — see the
+  # boundary list in packages/config/eslint/logic-only.js.
+  #
+  # All three packages must move together: `-web` and `-native` both declare
+  # `@outcode/bug-reporter-core: ^2.0.0` and share its types across the package
+  # boundary, so a split major produces two incompatible BugReporterConfig types.
+  # The native half lives in catalog:expo alongside its native peer.
+  '@outcode/bug-reporter-core': 2.0.0
+  '@outcode/bug-reporter-web': 2.0.0
+
+  # --- web ---
+  vite: 8.2.0
+  '@vitejs/plugin-react': 6.0.5
+  react-router: 8.3.0
+  react-hook-form: 7.84.0
+  '@hookform/resolvers': 5.7.1
+  # EXACT. NativeWind 4 requires Tailwind 3. Its peer range `>3.3.0` is a known
+  # upstream bug (nativewind#1423) that lets Tailwind 4 install and then fail
+  # silently — no classes compiled, no error.
+  tailwindcss: 3.4.19
+  autoprefixer: 10.5.4
+  # >=8.5.18 is the floor: two HIGH advisories below that (arbitrary file read and
+  # path traversal via attacker-controlled sourceMappingURL). Also forced through
+  # `overrides` because Tailwind and autoprefixer pull their own copies.
+  postcss: 8.5.25
+  class-variance-authority: 0.7.1
+  clsx: 2.1.1
+  tailwind-merge: 3.6.0
+  tailwindcss-animate: 1.0.7
+  lucide-react: 1.28.0
+  '@sentry/react': 10.69.0
+  # Radix primitives, pulled in by the vendored shadcn components.
+  '@radix-ui/react-dialog': 1.1.23
+  '@radix-ui/react-label': 2.1.15
+  '@radix-ui/react-slot': 1.3.3
+
+  # --- test ---
+  vitest: 4.1.10
+  '@vitest/coverage-v8': 4.1.10
+  jsdom: 30.0.1
+  '@testing-library/react': 16.3.2
+  '@testing-library/dom': 10.4.1
+  '@testing-library/jest-dom': 6.10.0
+  '@testing-library/user-event': 14.6.1
+  axe-core: 4.12.1
+  '@playwright/test': 1.62.1
+
+  # --- mocks ---
+  msw: 2.15.0
+  '@mswjs/http-middleware': 0.10.3
+  express: 5.1.0
+  '@types/express': 5.0.6
+
+  # --- babel ---
+  # Declared explicitly per nativewind#1833: react-native-css-interop requires
+  # @babel/plugin-transform-react-jsx by name without depending on it.
+  #
+  # BABEL 7, not 8. npm `latest` is 8.x, and Babel 8 changed loadPartialConfig to
+  # require a callback — which breaks babel-jest and fails every mobile test with
+  # "Starting from Babel 8.0.0, the 'loadPartialConfig' function expects a
+  # callback". The whole RN/Expo toolchain is on Babel 7.
+  '@babel/core': 7.29.7
+  '@babel/plugin-transform-react-jsx': 7.29.7
+
+  # --- hooks / commits ---
+  husky: 9.1.7
+  lint-staged: 17.3.0
+  '@commitlint/cli': 21.2.1
+  '@commitlint/config-conventional': 21.0.0
+  '@types/node': 26.1.2
+
+# ---------------------------------------------------------------------------
+# Expo owns these versions, not us. Every value is copied verbatim from
+# `expo@57.0.9/bundledNativeModules.json`. DO NOT hand-edit: run
+# `pnpm --filter @repo/mobile exec expo install --check` and let Expo tell you.
+# ---------------------------------------------------------------------------
+catalogs:
+  expo:
+    # --- Expo owns these. Verified against bundledNativeModules.json. ---
+    # NOTE: in SDK 57 Expo unified its module versions with the SDK number, so
+    # expo-constants is ~57.0.8, NOT ~18.x. Older majors are stale guesses.
+    expo: 57.0.9
+    expo-constants: ~57.0.8
+    expo-linking: ~57.0.4
+    expo-localization: ~57.0.1
+    expo-router: ~57.0.9
+    expo-secure-store: ~57.0.1
+    expo-splash-screen: ~57.0.5
+    expo-status-bar: ~57.0.1
+    expo-system-ui: ~57.0.2
+    react-native: 0.86.2
+    react-native-gesture-handler: ~2.32.0
+    react-native-reanimated: 4.5.1
+    react-native-safe-area-context: ~5.7.0
+    react-native-screens: ~4.26.0
+    react-native-svg: 15.15.4
+    react-native-web: ~0.21.0
+    react-native-worklets: 0.10.1
+    jest-expo: ~57.0.3
+    # Expo pins Sentry to the 7.x line for SDK 57 — npm `latest` is 8.x and is
+    # NOT compatible with this SDK.
+    '@sentry/react-native': ~7.11.0
+
+    # Peer of @outcode/bug-reporter-native. Ships native code, so Expo owns the
+    # version — 5.1.0 is verified against bundledNativeModules.json, NOT chosen.
+    # Consequence: screen capture needs a DEV BUILD. In Expo Go the native module
+    # is absent and capture silently returns nothing.
+    react-native-view-shot: 5.1.0
+
+    # --- Not pinned by Expo; our choice. ---
+    nativewind: 4.2.6
+    # Mobile half of the bug reporter. Keep in lockstep with the two
+    # '@outcode/bug-reporter-*' entries in the main catalog above.
+    '@outcode/bug-reporter-native': 2.0.0
+    '@testing-library/react-native': 14.0.1
+    # Jest 29, NOT 30. jest-expo@57.0.3 depends on Jest 29 internals
+    # (@jest/globals ^29.2.1, babel-jest ^29.2.1, jest-snapshot ^29.2.1). Pairing
+    # it with a v30 runtime fails at suite start with
+    # "this._moduleMocker.clearMocksOnScope is not a function", which reads like a
+    # config problem and is not one.
+    jest: 29.7.0
+    '@types/jest': 29.5.14
+    lucide-react-native: 1.28.0
+
+# pnpm 11 gates brand-new releases by default. globals@17.9.0 is excluded
+# because the catalog pins it deliberately.
+minimumReleaseAgeExclude:
+  - globals@17.9.0
+  - '@outcode/bug-reporter-core@2.0.0'
+  - '@outcode/bug-reporter-native@2.0.0'
+  - '@outcode/bug-reporter-web@2.0.0'

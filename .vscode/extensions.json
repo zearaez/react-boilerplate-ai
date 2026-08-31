@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    // ── AI coding ──────────────────────────────────────────────────────────────
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+
+    // ── TypeScript / JS ────────────────────────────────────────────────────────
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+
+    // ── React / JSX ────────────────────────────────────────────────────────────
+    "dsznajder.es7-react-js-snippets",
+
+    // ── Tailwind CSS ───────────────────────────────────────────────────────────
+    "bradlc.vscode-tailwindcss",
+
+    // ── i18n ───────────────────────────────────────────────────────────────────
+    "lokalise.i18n-ally",
+
+    // ── Git ────────────────────────────────────────────────────────────────────
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+
+    // ── pnpm / monorepo ────────────────────────────────────────────────────────
+    "zbirenbaum.pnpm-workspaces"
+  ]
+}

@@ -1,0 +1,32 @@
+export {
+  create{{pascalCase name}},
+  delete{{pascalCase name}},
+  get{{pascalCase name}},
+  list{{pascalCase plural}},
+  update{{pascalCase name}},
+} from './api';
+export {
+  {{camelCase name}}DetailOptions,
+  {{camelCase plural}}ListOptions,
+  useCreate{{pascalCase name}},
+  useDelete{{pascalCase name}},
+  use{{pascalCase name}}Query,
+  use{{pascalCase plural}}Query,
+  useUpdate{{pascalCase name}},
+} from './hooks';
+export { {{camelCase name}}Keys } from './keys';
+export {
+  create{{pascalCase name}}InputSchema,
+  {{camelCase name}}PageSchema,
+  {{camelCase name}}Schema,
+  {{camelCase plural}}ListParamsSchema,
+  update{{pascalCase name}}InputSchema,
+} from './schemas';
+export type {
+  Create{{pascalCase name}}Input,
+  {{pascalCase name}},
+  {{pascalCase name}}Page,
+  {{pascalCase plural}}ListParams,
+  {{pascalCase plural}}ListParamsInput,
+  Update{{pascalCase name}}Input,
+} from './schemas';

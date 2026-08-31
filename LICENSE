@@ -1,0 +1,25 @@
+Copyright (c) 2026 OutCode Software. All rights reserved.
+
+PROPRIETARY AND CONFIDENTIAL
+
+This software and its source code are the confidential and proprietary property
+of OutCode Software. No part of this repository may be copied, reproduced,
+modified, published, distributed, sublicensed, or used to create derivative works
+without the prior written permission of OutCode Software.
+
+Receiving access to this repository does not grant any licence, right, or
+interest in the software beyond the specific purpose for which access was given.
+
+Third-party dependencies are licensed by their respective owners under their own
+terms; nothing here alters those terms.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+NOTE FOR FORKS: if this template is used for an open-source project, replace this
+file with the chosen OSS licence. Leaving a proprietary notice on an open-source
+project is worse than having no licence at all.

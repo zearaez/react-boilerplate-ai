@@ -1,0 +1,23 @@
+name: Feature request
+description: Propose a change
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is hard or impossible today. Not the solution.
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations: { required: true }
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Platforms affected
+      options:
+        - label: web
+        - label: mobile
+        - label: shared logic (both apps must change together)

@@ -1,0 +1,46 @@
+---
+description: Rules for core feature slices (schemas, api, keys, hooks)
+globs: ['packages/core/src/features/**/*.ts']
+alwaysApply: false
+---
+
+# Core feature slice
+
+Platform-agnostic — no JSX, no `react-native`, no `expo-*`, no `@repo/tokens`.
+ESLint enforces this; never add `eslint-disable`.
+
+## File order
+
+1. `schemas.ts` — zod schemas, `z.infer` for types
+2. `api.ts` — one function per endpoint, `Schema.parse(response.data)`
+3. `keys.ts` — key factory, never inline arrays
+4. `hooks.ts` — TanStack Query hooks
+5. `index.ts` — barrel
+
+## zod v4 syntax
+
+```ts
+z.email(); // not z.string().email()
+z.iso.datetime(); // not z.string().datetime()
+z.infer<typeof schema>; // derive type, never hand-write interface
+```
+
+## TanStack Query v5 syntax
+
+```ts
+useQuery({ queryKey: xKeys.detail(id), queryFn: () => getX(id) });
+// No positional overloads — object syntax only
+```
+
+`staleTime`/`gcTime` are set once in `packages/core/src/query/client.ts`. Do not
+repeat them on every hook; override one only when that resource really differs,
+with a comment saying why (see `profileOptions`).
+
+## Cross-field validation
+
+```ts
+.superRefine((val, ctx) => {
+  if (condition) ctx.addIssue({ code: 'custom', path: ['fieldName'], message: '...' });
+})
+// NOT .refine() — it puts errors at form root, not on the field
+```

@@ -1,0 +1,16 @@
+# Normalise line endings so hooks and lint behave the same on every machine.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+pnpm-lock.yaml linguist-generated=true -diff
+apps/web/src/global.css linguist-generated=true
+apps/mobile/global.css linguist-generated=true

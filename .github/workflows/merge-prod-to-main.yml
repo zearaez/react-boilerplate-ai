@@ -1,0 +1,33 @@
+name: Merge prod to main
+
+# The OutCode flow keeps `main` aligned with what is actually live in the app
+# stores, so this merge happens only AFTER Apple/Google approval — never
+# automatically on a prod deploy. The environment gate is the human checkpoint.
+on:
+  workflow_dispatch:
+    inputs:
+      store_approval_reference:
+        description: App Store / Play Console approval reference
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    environment: store-release
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Merge prod into main
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin prod
+          git merge --no-ff origin/prod \
+            -m "chore(repo): merge prod into main after store approval (${{ inputs.store_approval_reference }})"
+          git push origin main

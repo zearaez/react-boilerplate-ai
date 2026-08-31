@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": ["@repo/config/tsconfig/expo.json", "expo/tsconfig.base"],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./*"]
+    },
+    "types": ["node", "jest", "nativewind/types"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": ["node_modules", "dist", ".expo"]
+}

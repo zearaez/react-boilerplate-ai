@@ -1,0 +1,32 @@
+import { waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { authenticateTestUser } from '../../../test/authenticate';
+import { renderHookWithQuery } from '../../../test/render-hook';
+import { use{{pascalCase plural}}Query } from '../hooks';
+import { {{camelCase name}}Keys } from '../keys';
+
+beforeEach(async () => {
+  await authenticateTestUser();
+});
+
+describe('use{{pascalCase plural}}Query', () => {
+  it('loads the first page', async () => {
+    const { result } = renderHookWithQuery(() => use{{pascalCase plural}}Query({ pageSize: 10 }));
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.{{camelCase plural}}.length).toBeGreaterThan(0);
+  });
+
+  it('builds nested query keys so lists and details invalidate independently', () => {
+    expect({{camelCase name}}Keys.detail('x')).toEqual(['{{plural}}', 'detail', 'x']);
+    expect({{camelCase name}}Keys.lists()).toEqual(['{{plural}}', 'list']);
+  });
+
+  // TODO: cover the mutations. The optimistic rollback in useUpdate{{pascalCase name}}
+  // is the part most worth a test — see
+  // packages/core/src/features/posts/__tests__/hooks.test.ts for the shape.
+});

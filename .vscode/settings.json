@@ -1,0 +1,71 @@
+{
+  // ── GitHub Copilot ──────────────────────────────────────────────────────────
+  // Read .github/copilot-instructions.md for the full project context.
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+
+  // Per-file-pattern instruction files in .github/instructions/
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "This is a pnpm monorepo with two apps (web, mobile) and four packages (core, tokens, mocks, config). Always check AGENTS.md before adding code."
+    },
+    {
+      "text": "Use @repo/core hooks and schemas. Never add raw API calls in components. Never inline query key arrays."
+    },
+    {
+      "text": "No any, no console.*, no raw hex colors, no localStorage. Run pnpm lint:fix after every edit."
+    }
+  ],
+
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Conventional Commits format: type(scope): description. Types: feat, fix, chore, refactor, test, docs, perf. Scope is the package or feature name (e.g. core, web, mobile, tokens, mocks). Keep summary under 72 chars. No period at end."
+    }
+  ],
+
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "text": "Follow the PR template in .github/pull_request_template.md. Include: what changed and why, how to verify (exact steps), screenshots for UI changes (web AND mobile if a shared hook changed), and confirm pnpm quality:check passes."
+    }
+  ],
+
+  // ── Editor ──────────────────────────────────────────────────────────────────
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // "always", not "explicit": import order is an ESLint rule here AND a CI gate,
+  // and Prettier does not touch it. With "explicit" the fixes only run when you
+  // invoke "Fix all" by hand, so `pnpm quality:check` fails on import order long
+  // after the edit that caused it. This is the on-save half of `pnpm fix`.
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+
+  // ── TypeScript ──────────────────────────────────────────────────────────────
+  // Point at the root tsconfig; each package has its own but this gives VS Code
+  // cross-package go-to-definition.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // ── Files ───────────────────────────────────────────────────────────────────
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.turbo": true,
+    "**/dist": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "pnpm-lock.yaml": true
+  },
+
+  // ── ESLint ──────────────────────────────────────────────────────────────────
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [{ "pattern": "apps/*/" }, { "pattern": "packages/*/" }],
+
+  // ── Tailwind ────────────────────────────────────────────────────────────────
+  // Point at the right config for each sub-project.
+  "tailwindCSS.experimental.configFile": {
+    "apps/web/**": "apps/web/tailwind.config.ts",
+    "apps/mobile/**": "apps/mobile/tailwind.config.ts"
+  }
+}
