@@ -40,7 +40,7 @@ jobs:
         # Small but load-bearing: AGENTS.md tells agents to read those exact URLs
         # instead of trusting their training data. A 404 in that table teaches
         # them the table is unreliable, and nothing else would surface it.
-        uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2.4.1
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: --no-progress --max-concurrency 4 --accept 200,206,429 AGENTS.md README.md docs/
           fail: true
