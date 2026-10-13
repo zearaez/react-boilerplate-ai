@@ -153,18 +153,18 @@ catalog:
   '@radix-ui/react-slot': 1.3.3
 
   # --- test ---
-  vitest: 4.1.10
-  '@vitest/coverage-v8': 4.1.10
-  jsdom: 30.0.1
-  '@testing-library/react': 16.3.2
-  '@testing-library/dom': 10.4.1
-  '@testing-library/jest-dom': 6.10.0
-  '@testing-library/user-event': 14.6.1
+  vitest: 5.0.3
+  '@vitest/coverage-v8': 5.0.3
+  jsdom: 30.1.2
+  '@testing-library/react': 16.3.3
+  '@testing-library/dom': 10.4.2
+  '@testing-library/jest-dom': 7.0.1
+  '@testing-library/user-event': 14.6.7
   axe-core: 4.12.1
   '@playwright/test': 1.62.1
 
   # --- mocks ---
-  msw: 2.15.0
+  msw: 3.0.3
   '@mswjs/http-middleware': 0.10.3
   express: 5.1.0
   '@types/express': 5.0.6
@@ -230,7 +230,7 @@ catalogs:
     # Mobile half of the bug reporter. Keep in lockstep with the two
     # '@outcode/bug-reporter-*' entries in the main catalog above.
     '@outcode/bug-reporter-native': 2.0.0
-    '@testing-library/react-native': 14.0.1
+    '@testing-library/react-native': 14.1.0
     # Jest 29, NOT 30. jest-expo@57.0.3 depends on Jest 29 internals
     # (@jest/globals ^29.2.1, babel-jest ^29.2.1, jest-snapshot ^29.2.1). Pairing
     # it with a v30 runtime fails at suite start with
